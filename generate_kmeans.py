@@ -11,18 +11,7 @@ from scipy.spatial import distance
 from sklearn.cluster import KMeans
 
 
-DATA_FILE = 'k_means.txt'
-
-
-def get_user(all_pkgs, popcon_file_path):
-    popcon_entry = read_popcon_file(popcon_file_path)
-    user = [0 for x in range(len(all_pkgs))]
-
-    for pkg_index, pkg in enumerate(all_pkgs):
-        if pkg in popcon_entry:
-            user[pkg_index] = 1
-
-    return user
+DATA_FILE = 'kmeans_data.txt'
 
 
 def get_users(all_pkgs, popcon_entries):
@@ -90,21 +79,11 @@ def main():
     users_clusters = k_means.labels_.tolist()
     clusters = k_means.cluster_centers_
 
-    saved_data = {'users': users, 'k_means': k_means}
+    saved_data = {'all_pkgs': all_pkgs, 'clusters': clusters}
     with open(DATA_FILE, 'wb') as text:
         pickle.dump(saved_data, text)
 
-    # popcon_file_path = os.path.expanduser(sys.argv[2])
-    # user = get_user(all_pkgs, popcon_file_path)
-    # cluster = clusters[spatial.KDTree(clusters).query(user)[1]]
-    # user_cluster = np.where(clusters == cluster)[0][0]
-
-    # import ipdb; ipdb.set_trace()
-
-    # print "users: {}".format(len(users))
-    # print "users_clusters: {}".format(users_clusters)
-    # print "user_cluster: {}".format(user_cluster)
-
+    print "Generated KMeans data"
 
 if __name__ == '__main__':
     main()
