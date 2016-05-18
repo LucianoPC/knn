@@ -11,6 +11,9 @@ from scipy.spatial import distance
 from sklearn.cluster import KMeans
 
 
+DATA_FILE = 'k_means.txt'
+
+
 def get_user(all_pkgs, popcon_file_path):
     popcon_entry = read_popcon_file(popcon_file_path)
     user = [0 for x in range(len(all_pkgs))]
@@ -72,6 +75,10 @@ def get_popcon_entries(popcon_entries_path):
 
 
 def main():
+    if len(sys.argv) < 2:
+        print "Usage: {} [popcon-entries_path]".format(sys.argv[0])
+        exit(1)
+
     popcon_entries_path = os.path.expanduser(sys.argv[1])
     popcon_entries = get_popcon_entries(popcon_entries_path)
     all_pkgs = get_all_pkgs(popcon_entries)
@@ -83,9 +90,9 @@ def main():
     users_clusters = k_means.labels_.tolist()
     clusters = k_means.cluster_centers_
 
-    knn = {'users': users, 'k_means': k_means}
-    with open('knn.txt', 'wb') as text:
-        pickle.dump(knn, text)
+    saved_data = {'users': users, 'k_means': k_means}
+    with open(DATA_FILE, 'wb') as text:
+        pickle.dump(saved_data, text)
 
     # popcon_file_path = os.path.expanduser(sys.argv[2])
     # user = get_user(all_pkgs, popcon_file_path)
