@@ -3,6 +3,7 @@
 import numpy as np
 import os
 import pickle
+import re
 import sys
 
 from scipy import spatial
@@ -26,9 +27,12 @@ def read_popcon_file(file_path):
     popcon_entry = []
     with open(file_path, 'r') as text:
         lines = text.readlines()
-        print file_path
-        popcon_entry = [line.split()[2] for line in lines[1:-1]
-                        if '/' not in line.split()[2]]
+        for line in lines[1:-1]:
+            pkg = line.split()[2]
+
+            if (not re.match(r'^lib.*', pkg) and
+               not re.match(r'.*doc$', pkg) and '/' not in line.split()[2]):
+                popcon_entry.append(pkg)
 
     return popcon_entry
 

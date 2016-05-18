@@ -2,6 +2,7 @@
 
 import os
 import pickle
+import re
 import sys
 
 from sklearn.cluster import KMeans
@@ -38,8 +39,12 @@ def read_popcon_file(file_path):
     popcon_entry = []
     with open(file_path, 'r') as text:
         lines = text.readlines()
-        popcon_entry = [line.split()[2] for line in lines[1:-1]
-                        if '/' not in line.split()[2]]
+        for line in lines[1:-1]:
+            pkg = line.split()[2]
+
+            if (not re.match(r'^lib.*', pkg) and
+               not re.match(r'.*doc$', pkg) and '/' not in line.split()[2]):
+                popcon_entry.append(pkg)
 
     return popcon_entry
 
@@ -75,11 +80,13 @@ def main():
     users_clusters = k_means.labels_.tolist()
     clusters = k_means.cluster_centers_
 
-    saved_data = {'all_pkgs': all_pkgs, 'clusters': clusters, 'users': users}
+    saved_data = {'all_pkgs': all_pkgs, 'clusters': clusters, 'users': users,
+                  'users_clusters': users_clusters}
     with open(DATA_FILE, 'wb') as text:
         pickle.dump(saved_data, text)
 
     print "Generated KMeans data"
+
 
 if __name__ == '__main__':
     main()
