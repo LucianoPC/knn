@@ -12,6 +12,13 @@ from scipy import spatial
 DATA_FILE = 'kmeans_data.txt'
 
 
+def get_user_cluster_index(user, clusters):
+    cluster = clusters[spatial.KDTree(clusters).query(user)[1]]
+    cluster_index = np.where(clusters == cluster)[0][0]
+
+    return cluster_index
+
+
 def get_user(all_pkgs, popcon_file_path):
     popcon_entry = read_popcon_file(popcon_file_path)
     user = [0 for x in range(len(all_pkgs))]
@@ -52,8 +59,7 @@ def main():
 
     popcon_file_path = os.path.expanduser(sys.argv[1])
     user = get_user(all_pkgs, popcon_file_path)
-    cluster = clusters[spatial.KDTree(clusters).query(user)[1]]
-    cluster_index = np.where(clusters == cluster)[0][0]
+    cluster_index = get_user_cluster_index(user, clusters)
 
     # import ipdb; ipdb.set_trace()
 
