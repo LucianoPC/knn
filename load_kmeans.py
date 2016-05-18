@@ -3,12 +3,9 @@
 import numpy as np
 import os
 import pickle
-import random
 import sys
 
 from scipy import spatial
-from scipy.spatial import distance
-from sklearn.cluster import KMeans
 
 
 DATA_FILE = 'kmeans_data.txt'
@@ -62,4 +59,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

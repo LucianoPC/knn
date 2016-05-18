@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 
-import numpy as np
 import os
 import pickle
-import random
 import sys
 
-from scipy import spatial
-from scipy.spatial import distance
 from sklearn.cluster import KMeans
 
 
@@ -79,7 +75,7 @@ def main():
     users_clusters = k_means.labels_.tolist()
     clusters = k_means.cluster_centers_
 
-    saved_data = {'all_pkgs': all_pkgs, 'clusters': clusters}
+    saved_data = {'all_pkgs': all_pkgs, 'clusters': clusters, 'users': users}
     with open(DATA_FILE, 'wb') as text:
         pickle.dump(saved_data, text)
 
