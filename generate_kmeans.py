@@ -8,7 +8,23 @@ import sys
 from sklearn.cluster import KMeans
 
 
-DATA_FILE = 'kmeans_data.txt'
+DATA_FILE = 'knn_data'
+
+
+def print_percentage(number, n_numbers, bar_length=40):
+    percent = float(number) / float(n_numbers)
+    hashes = '#' * int(round(percent * bar_length))
+    spaces = ' ' * (bar_length - len(hashes))
+    percent = int(round(percent * 100))
+
+    percent_message = ("\rPercent: [{}] [{} / {}] {}%".format(hashes + spaces,
+        number, n_numbers, percent))
+
+    sys.stdout.write(percent_message)
+    sys.stdout.flush()
+
+    if number == n_numbers:
+        print '\n'
 
 
 def get_users(all_pkgs, popcon_entries):
@@ -21,13 +37,19 @@ def get_users(all_pkgs, popcon_entries):
             if pkg in popcon_entry:
                 users[entry_index][pkg_index] = 1
 
+        print_percentage(pkg_index + 1, len(all_pkgs))
+
     return users
 
 
 def get_all_pkgs(popcon_entries):
     all_pkgs = set()
 
-    for popcon_entry in popcon_entries:
+    len_popcon_entries = len(popcon_entries)
+
+    for index, popcon_entry in enumerate(popcon_entries):
+        print_percentage(index + 1, len_popcon_entries)
+
         for pkg in popcon_entry:
             all_pkgs.add(pkg)
 
@@ -50,16 +72,18 @@ def read_popcon_file(file_path):
 
 
 def get_popcon_entries(popcon_entries_path):
-    folders = os.listdir(popcon_entries_path)
+    popcon_files = os.listdir(popcon_entries_path)
+    len_files = len(popcon_files)
 
     popcon_entries = []
-    for folder in folders:
-        folder_path = os.path.join(popcon_entries_path, folder)
-        file_path = os.path.join(folder_path, os.listdir(folder_path)[0])
-        popcon_entry = read_popcon_file(file_path)
+    for index, popcon_file in enumerate(popcon_files):
+        popcon_file_path = os.path.join(popcon_entries_path, popcon_file)
+        popcon_entry = read_popcon_file(popcon_file_path)
 
         if len(popcon_entry) > 0:
             popcon_entries.append(popcon_entry)
+
+        print_percentage(index + 1, len_files)
 
     return popcon_entries
 
@@ -70,23 +94,30 @@ def main():
         exit(1)
 
     popcon_entries_path = os.path.expanduser(sys.argv[1])
+
+    print "Loading popcon files:"
     popcon_entries = get_popcon_entries(popcon_entries_path)
+
+    print "Get all packages of popcon files:"
     all_pkgs = get_all_pkgs(popcon_entries)
+
+    print "Creating matrix of users"
     users = get_users(all_pkgs, popcon_entries)
 
+
+    print "Creating KMeans data"
     random_state = 170
     k_means = KMeans(n_clusters=3, random_state=random_state)
     k_means.fit(users)
     users_clusters = k_means.labels_.tolist()
-    clusters = k_means.cluster_centers_
+    clusters = k_means.cluster_centers_.tolist()
 
     saved_data = {'all_pkgs': all_pkgs, 'clusters': clusters, 'users': users,
                   'users_clusters': users_clusters}
     with open(DATA_FILE, 'wb') as text:
         pickle.dump(saved_data, text)
 
-    print "Generated KMeans data"
-
+    print "\nFinish, generated file: {}".format(DATA_FILE)
 
 if __name__ == '__main__':
     main()
