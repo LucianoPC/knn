@@ -11,14 +11,14 @@ from sklearn.cluster import KMeans
 DATA_FILE = 'knn_data'
 
 
-def print_percentage(number, n_numbers, bar_length=40):
+def print_percentage(number, n_numbers, message='Percent', bar_length=40):
     percent = float(number) / float(n_numbers)
     hashes = '#' * int(round(percent * bar_length))
     spaces = ' ' * (bar_length - len(hashes))
     percent = int(round(percent * 100))
 
-    percent_message = ("\rPercent: [{}] [{} / {}] {}%".format(hashes + spaces,
-        number, n_numbers, percent))
+    percent_message = ("\r{}: [{}] [{} / {}] {}%".format(message,
+        hashes + spaces, number, n_numbers, percent))
 
     sys.stdout.write(percent_message)
     sys.stdout.flush()
